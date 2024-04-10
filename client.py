@@ -26,19 +26,18 @@ class client:
                     print("La connexion avec le serveur a été fermée.")
                     return 
                 self.responseFromServer = data.decode()
-                print("receive :", self.responseFromServer)
+                # print("receive :", self.responseFromServer)
                 if self.responseFromServer != "":
                     self.restoreTable(self.responseFromServer[:9])
                     print(self.table)
                     message = self.responseFromServer[9:]
-                    print(message)
                     if message == "play":
                         print(f"C'est à vous de jouer")
                         selectedLine = int(input("Donner la ligne sélectionnée (0,1,2): "))
                         selectedRow = int(input("Donner la colonne sélectionnée (0,1,2): "))
                         if self.isValid(selectedLine, selectedRow):  
                             message = str(selectedLine) + str(selectedRow)
-                            print("message",message)
+                            # print("message",message)
                             self.client_socket.sendall(message.encode())
                         else:
                             while not self.isValid(selectedLine, selectedRow):
@@ -46,12 +45,14 @@ class client:
                                 selectedLine = int(input("Donner la ligne sélectionnée (0,1,2): "))
                                 selectedRow = int(input("Donner la colonne sélectionnée (0,1,2): "))
                             message = str(selectedLine) + str(selectedRow)
-                            print("message",message)
+                            # print("message",message)
                             self.client_socket.sendall(message.encode())
                     elif message == "loose":
                         print("Vous avez perdu")
-                    else:
+                    elif message == "win":
                         print("Vous avez gagné")
+                    else:
+                        print("error :", message)
             except Exception as e:
                 print("Une erreur s'est produite lors de la réception des données du serveur:", e)
                 return
@@ -61,6 +62,7 @@ class client:
     
     def restoreTable(self, encodedTable):
         line = list()
+        self.table = list()
         i = 0
         for element in encodedTable:
             i +=1

@@ -62,10 +62,11 @@ class Server:
                 print(f"C'est au joueur {self.whoPlay} de jouer")
                 response = ''.join(''.join(str(element) for element in line) for line in self.table) + "play"
                 self.client_socket.sendall(response.encode())
+                self.inputFromClient == ""
                 while self.inputFromClient == "":
                     client_thread = threading.Thread(target=self.listening, args=(self.client_socket,))
                     client_thread.start()
-                self.table[int(self.inputFromClient[0])][int(self.inputFromClient[1])] = "0" if self.whoPlay == 0 else "X"
+                self.table[int(self.inputFromClient[0])][int(self.inputFromClient[1])] = "0"
             else:
                 print(f"C'est à vous de jouer")
                 selectedLine = int(input("Donner la ligne sélectionnée (0,1,2): "))
@@ -86,6 +87,7 @@ class Server:
         else:
             response = ''.join(''.join(str(element) for element in line) for line in self.table)  + "loose"
         self.client_socket.sendall(response.encode())
+        return
         
 if __name__ == "__main__":
     Server()
