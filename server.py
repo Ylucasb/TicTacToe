@@ -11,6 +11,7 @@ class Server:
     server_socket = any
     client_socket = any
     inputFromClient = ""
+    saveinputFromClient = ""
     def __init__(self):
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.whoPlay = random.randint(0,1)
@@ -55,6 +56,14 @@ class Server:
     def isValid(self, selectedLine, selectedRow):
         return selectedLine>=0 and selectedLine<=3 and selectedRow>=0 and selectedRow<=3 and self.table[selectedLine][selectedRow] =="."
 
+    def display(self):
+        print(self.table[0][0], " | ", self.table[0][1], " | ",self.table[0][2])
+        print("--------------")
+        print(self.table[1][0], " | ", self.table[1][1], " | ",self.table[1][2])
+        print("--------------")
+        print(self.table[2][0], " | ", self.table[2][1], " | ",self.table[2][2])
+        print("--------------")
+        
     def game(self):
         while self.isNotFinish():
             self.whoPlay = 1 if self.whoPlay == 0 else 0
@@ -66,6 +75,10 @@ class Server:
                 while self.inputFromClient == "":
                     client_thread = threading.Thread(target=self.listening, args=(self.client_socket,))
                     client_thread.start()
+                while self.inputFromClient == self.saveinputFromClient:
+                    client_thread = threading.Thread(target=self.listening, args=(self.client_socket,))
+                    client_thread.start()
+                self.saveinputFromClient = self.inputFromClient
                 self.table[int(self.inputFromClient[0])][int(self.inputFromClient[1])] = "0"
             else:
                 print(f"C'est à vous de jouer")
@@ -79,7 +92,7 @@ class Server:
                         selectedLine = int(input("Donner la ligne sélectionnée (0,1,2): "))
                         selectedRow = int(input("Donner la colonne sélectionnée (0,1,2): "))
                     self.table[selectedLine][selectedRow] = "0" if self.whoPlay == 0 else "X"
-            print(self.table)
+            self.display()
             
         print(f"La partie est finie le joueur {self.playerWhoWin} a gagné")
         if self.playerWhoWin == 0:

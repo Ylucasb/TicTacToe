@@ -26,10 +26,9 @@ class client:
                     print("La connexion avec le serveur a été fermée.")
                     return 
                 self.responseFromServer = data.decode()
-                # print("receive :", self.responseFromServer)
                 if self.responseFromServer != "":
                     self.restoreTable(self.responseFromServer[:9])
-                    print(self.table)
+                    self.display()
                     message = self.responseFromServer[9:]
                     if message == "play":
                         print(f"C'est à vous de jouer")
@@ -37,7 +36,6 @@ class client:
                         selectedRow = int(input("Donner la colonne sélectionnée (0,1,2): "))
                         if self.isValid(selectedLine, selectedRow):  
                             message = str(selectedLine) + str(selectedRow)
-                            # print("message",message)
                             self.client_socket.sendall(message.encode())
                         else:
                             while not self.isValid(selectedLine, selectedRow):
@@ -45,12 +43,13 @@ class client:
                                 selectedLine = int(input("Donner la ligne sélectionnée (0,1,2): "))
                                 selectedRow = int(input("Donner la colonne sélectionnée (0,1,2): "))
                             message = str(selectedLine) + str(selectedRow)
-                            # print("message",message)
                             self.client_socket.sendall(message.encode())
                     elif message == "loose":
                         print("Vous avez perdu")
+                        break
                     elif message == "win":
                         print("Vous avez gagné")
+                        break
                     else:
                         print("error :", message)
             except Exception as e:
@@ -60,6 +59,14 @@ class client:
     def isValid(self, selectedLine, selectedRow):
         return selectedLine>=0 and selectedLine<=3 and selectedRow>=0 and selectedRow<=3 and self.table[selectedLine][selectedRow] =="."
     
+    def display(self):
+        print(self.table[0][0], " | ", self.table[0][1], " | ",self.table[0][2])
+        print("--------------")
+        print(self.table[1][0], " | ", self.table[1][1], " | ",self.table[1][2])
+        print("--------------")
+        print(self.table[2][0], " | ", self.table[2][1], " | ",self.table[2][2])
+        print("--------------")
+        
     def restoreTable(self, encodedTable):
         line = list()
         self.table = list()
